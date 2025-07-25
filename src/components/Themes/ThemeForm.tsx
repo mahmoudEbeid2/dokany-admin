@@ -1,55 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { addTheme } from '../../store/slices/themesSlice';
-import { X, Upload } from 'lucide-react';
+import { addThemeAsync, editThemeAsync } from '../../store/slices/themesSlice';
+import { X } from 'lucide-react';
 
 interface ThemeFormProps {
   onClose: () => void;
+  editTheme?: any;
 }
 
-const ThemeForm: React.FC<ThemeFormProps> = ({ onClose }) => {
-  const [formData, setFormData] = useState({
+const ThemeForm: React.FC<ThemeFormProps> = ({ onClose, editTheme }) => {
+  const [formData, setFormData] = useState<{ name: string; image: File | null }>({
     name: '',
-    imageUrl: '',
+    image: null,
   });
-
+  const [preview, setPreview] = useState<string | null>(null);
   const dispatch = useDispatch();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate URL format
-    try {
-      new URL(formData.imageUrl);
-    } catch {
-      alert('Please enter a valid image URL');
-      return;
+  useEffect(() => {
+    if (editTheme) {
+      setFormData({ name: editTheme.name || '', image: null });
+      setPreview(editTheme.image || null);
+    } else {
+      setFormData({ name: '', image: null });
+      setPreview(null);
     }
-
-    dispatch(addTheme(formData));
-    onClose();
-  };
+  }, [editTheme]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    const { name, value, files } = e.target;
+    if (name === 'image' && files && files[0]) {
+      setFormData(prev => ({ ...prev, image: files[0] }));
+      setPreview(URL.createObjectURL(files[0]));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
-  const predefinedImages = [
-    'https://images.pexels.com/photos/956981/milky-way-starry-sky-night-sky-star-956981.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'https://images.pexels.com/photos/631477/pexels-photo-631477.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&cs=tinysrgb&w=400',
-  ];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('name', formData.name);
+    if (formData.image) {
+      data.append('image', formData.image);
+    } else if (editTheme && editTheme.image) {
+      data.append('image', editTheme.image); // لإبقاء الصورة القديمة إذا لم يتم اختيار صورة جديدة
+    }
+    if (editTheme) {
+      await dispatch(editThemeAsync({ id: editTheme.id, data }) as any);
+    } else {
+      await dispatch(addThemeAsync(data) as any);
+    }
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Add New Theme</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{editTheme ? 'Edit Theme' : 'Add New Theme'}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -57,7 +65,6 @@ const ThemeForm: React.FC<ThemeFormProps> = ({ onClose }) => {
             <X className="h-6 w-6" />
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -74,62 +81,32 @@ const ThemeForm: React.FC<ThemeFormProps> = ({ onClose }) => {
               required
             />
           </div>
-
           <div>
-            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-2">
-              Image URL
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+              Theme Image
             </label>
             <input
-              type="url"
-              id="imageUrl"
-              name="imageUrl"
-              value={formData.imageUrl}
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://example.com/image.jpg"
-              required
+              required={!editTheme}
             />
           </div>
-
-          <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Or choose from presets:</p>
-            <div className="grid grid-cols-2 gap-2">
-              {predefinedImages.map((url, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, imageUrl: url }))}
-                  className={`relative h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                    formData.imageUrl === url ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <img
-                    src={url}
-                    alt={`Preset ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {formData.imageUrl && (
+          {preview && (
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
               <div className="h-32 rounded-lg overflow-hidden border border-gray-200">
                 <img
-                  src={formData.imageUrl}
+                  src={preview}
                   alt="Theme preview"
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = 'https://images.pexels.com/photos/956981/milky-way-starry-sky-night-sky-star-956981.jpeg?auto=compress&cs=tinysrgb&w=400';
-                  }}
                 />
               </div>
             </div>
           )}
-
           <div className="flex space-x-3 pt-4">
             <button
               type="button"
@@ -142,7 +119,7 @@ const ThemeForm: React.FC<ThemeFormProps> = ({ onClose }) => {
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Add Theme
+              {editTheme ? 'Save Changes' : 'Add Theme'}
             </button>
           </div>
         </form>

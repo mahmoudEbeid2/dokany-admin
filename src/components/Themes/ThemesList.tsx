@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store/store';
 import { fetchThemes, deleteThemeAsync } from '../../store/slices/themesSlice';
 import ThemeForm from './ThemeForm';
-import { Trash2, Plus, Palette, Pencil, Edit } from 'lucide-react';
+import { Trash2, Plus, Palette, Edit } from 'lucide-react';
 
 const ThemesList: React.FC = () => {
   const themes = useSelector((state: RootState) => state.themes.themes);

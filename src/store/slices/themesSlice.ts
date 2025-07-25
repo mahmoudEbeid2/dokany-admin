@@ -13,10 +13,9 @@ interface ThemesState {
   loading: boolean;
   error: string | null;
 }
-
-const API_URL = 'https://dokany-api-production.up.railway.app/themes';
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGphbXdoeTAwMDBiNmZkNHBsMTJ5c3AiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM0NzY1MjAsImV4cCI6MTc1NDA4MTMyMH0.KvCGcvcdl22xcN98AttbeNRYs34JjNSTmsuzNPFVGcQ';
-
+ const BaseURL = import.meta.env.VITE_API;
+const API_URL = `${BaseURL}/themes`;
+const TOKEN = localStorage.getItem("token");
 export const fetchThemes = createAsyncThunk('themes/fetchThemes', async (_, thunkAPI) => {
   try {
     const res = await axios.get(API_URL, {

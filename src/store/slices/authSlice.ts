@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { jwtDecode } from 'jwt-decode';
+import { AppDispatch } from '../store';
 
 interface User {
   id: string;
@@ -38,9 +40,33 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      localStorage.removeItem("token");
+    },
+    setUserFromDecodedToken: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.loading = false;
     },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } = authSlice.actions;
+export const {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+  setUserFromDecodedToken,
+} = authSlice.actions;
+
 export default authSlice.reducer;
+
+export const setUserFromToken = (token: string) => async (dispatch: AppDispatch) => {
+  try {
+    const decoded = jwtDecode<User>(token);
+    dispatch(setUserFromDecodedToken(decoded));
+  } catch (err) {
+    console.error("Invalid token", err);
+    dispatch(logout());
+  }
+};
+

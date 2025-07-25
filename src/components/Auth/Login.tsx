@@ -1,44 +1,92 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   loginStart,
   loginSuccess,
   loginFailure,
 } from "../../store/slices/authSlice";
 import { Lock, Mail, User } from "lucide-react";
+import { RootState } from "../../store/store";
+
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (token && isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [token, isAuthenticated, navigate]);
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setEmailError("Invalid email format. Please enter a valid email address.");
+      return;
+    }
+
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+      return;
+    }
+
+    if (password.length < 8) {
+      setPasswordError("Password must be at least 8 characters long.");
+      return;
+    }
+
     setLoading(true);
     dispatch(loginStart());
 
-    // Simulate API call delay
-    setTimeout(() => {
-      if (email === "admin@example.com" && password === "admin123") {
-        const user = {
-          id: "1",
-          email: email,
-          name: "Admin User",
-        };
-        dispatch(loginSuccess(user));
-        navigate("/dashboard");
-      } else {
-        setError("Invalid email or password. Please check your credentials.");
-        dispatch(loginFailure());
-      }
+    const BaseURL = import.meta.env.VITE_API;
+
+
+    try {
+      const res = await axios.post(
+        `${BaseURL}/auth/admin/login`,
+        { email, password }
+      );
+
+      const { user, token } = res.data;
+      localStorage.setItem("token", token);
+      dispatch(loginSuccess(user));
+      navigate("/dashboard");
+
+    } catch (err: any) {
+
+      const message =
+        err?.response?.data?.message || "Invalid email or password. Please try again.";
+      setError(message);
+      dispatch(loginFailure());
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
@@ -71,6 +119,9 @@ const Login: React.FC = () => {
                 required
               />
             </div>
+            {emailError && (
+              <p className="text-red-500 text-sm mt-1">{error}</p>
+            )}
           </div>
 
           <div>
@@ -88,27 +139,22 @@ const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="admin123"
+                placeholder="••••••••"
                 required
               />
             </div>
           </div>
+          {passwordError && !error && (
+            <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">
+              {passwordError}
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">
               {error}
             </div>
           )}
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Demo Credentials:</strong>
-              <br />
-              Email: admin@example.com
-              <br />
-              Password: admin123
-            </p>
-          </div>
 
           <button
             type="submit"
@@ -124,3 +170,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

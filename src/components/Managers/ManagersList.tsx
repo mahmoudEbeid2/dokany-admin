@@ -52,8 +52,9 @@ const ManagersList: React.FC = () => {
           // صورة عشوائية افتراضية
           const img = m.imageUrl || `https://i.pravatar.cc/150?img=${Math.floor(Math.random()*70)+1}`;
           return (
-            <div key={manager.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col items-center text-center space-y-3">
-              <img src={img} alt="Manager" className="w-20 h-20 rounded-full object-cover mb-2 border" />
+            <div key={manager.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col items-center text-center space-y-2 max-w-[280px] "
+>
+              <img src={img} alt="Manager" className="w-30 h-30 rounded-full object-cover mb-1 border-2" />
               <div className="text-lg font-bold text-gray-900">{manager.name}</div>
               <div className="text-sm text-gray-500">{manager.email}</div>
               <div className="text-sm text-gray-500">{m.phone || '---'}</div>

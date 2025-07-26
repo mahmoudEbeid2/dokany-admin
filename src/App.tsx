@@ -25,19 +25,22 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <PrivateRoute>
                   <Layout />
                 </PrivateRoute>
               }
             >
-              <Route index element={<Navigate to="/analytics" replace />} />
-              <Route path="analytics" element={<Analytics />} />
+              <Route
+                index
+                element={<Navigate to="/dashboard/analytics" replace />}
+              />
               <Route path="sellers" element={<SellersList />} />
               <Route path="sellers/:id" element={<SellerDetails />} />
               <Route path="managers" element={<ManagersList />} />
               <Route path="payouts" element={<PayoutsList />} />
+              <Route path="analytics" element={<Analytics />} />
               <Route path="themes" element={<ThemesList />} />
             </Route>
             <Route path="/" element={<Navigate to="/login" replace />} />

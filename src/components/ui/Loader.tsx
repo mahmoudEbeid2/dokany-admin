@@ -30,7 +30,7 @@ const LoaderSpinner: React.FC<LoaderProps> = ({
   };
 
   const containerClasses = fullScreen 
-    ? 'min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4'
+    ? 'h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4'
     : 'flex items-center justify-center py-10';
 
   return (

@@ -4,7 +4,11 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
 import { Users, UserCheck, BarChart3, Palette, LogOut, Shield, DollarSign, User, Sparkles } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onItemClick?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -13,6 +17,13 @@ const Sidebar: React.FC = () => {
       localStorage.removeItem('token');
       dispatch(logout());
       navigate('/login');
+    }
+  };
+
+  const handleItemClick = () => {
+    // Close mobile sidebar when item is clicked
+    if (onItemClick) {
+      onItemClick();
     }
   };
 
@@ -62,7 +73,7 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm h-screen w-64 shadow-2xl border-r border-gray-100 flex flex-col hidden lg:block">
+    <div className="bg-white/95 backdrop-blur-sm h-screen w-64 shadow-2xl border-r border-gray-100 flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
         <div className="flex items-center space-x-3">
@@ -87,6 +98,7 @@ const Sidebar: React.FC = () => {
           <NavLink
             key={to}
             to={to}
+            onClick={handleItemClick}
             className={({ isActive }) =>
               `group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 ${
                 isActive
@@ -95,14 +107,18 @@ const Sidebar: React.FC = () => {
               }`
             }
           >
-            <div className={`p-2 rounded-lg transition-all duration-200 ${
-              ({ isActive }: { isActive: boolean }) => isActive 
-                ? 'bg-white/20' 
-                : 'bg-gray-100 group-hover:bg-white/80'
-            }`}>
-              <Icon className="h-5 w-5" />
-            </div>
-            <span className="font-medium">{label}</span>
+            {({ isActive }) => (
+              <>
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
+                  isActive 
+                    ? 'bg-white/20' 
+                    : 'bg-gray-100 group-hover:bg-white/80'
+                }`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <span className="font-medium">{label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>

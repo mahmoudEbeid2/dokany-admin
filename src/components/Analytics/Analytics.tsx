@@ -121,7 +121,7 @@ const Analytics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="bg-gray-50 p-4 sm:p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded-lg w-48 sm:w-64 mb-2"></div>
@@ -143,7 +143,7 @@ const Analytics: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="bg-gray-50 flex items-center justify-center p-4 sm:p-6">
         <div className="text-center">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-red-600" />
@@ -156,7 +156,7 @@ const Analytics: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div className="bg-gray-50 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Clean Header */}
         <div className="mb-6 sm:mb-8">

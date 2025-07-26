@@ -293,7 +293,7 @@ const SellersList: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Enhanced Header */}
         <div className="mb-8">

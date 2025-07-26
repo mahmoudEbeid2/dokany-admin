@@ -310,7 +310,7 @@ const ManagersList: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       {/* Header */}
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 mb-6">

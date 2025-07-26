@@ -135,7 +135,7 @@ const PayoutsList: React.FC = () => {
   if (loading) return <LoaderSpinner />;
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 overflow-x-hidden">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">

@@ -170,7 +170,7 @@ const Profile: React.FC = () => {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <p className="text-red-600 font-medium mb-4">Failed to load profile data</p>
@@ -189,7 +189,7 @@ const Profile: React.FC = () => {
   const avatarColor = getAvatarColor(profileData.f_name + profileData.l_name);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 overflow-x-hidden">
       <div className="max-w-4xl mx-auto">
         {/* Enhanced Header */}
         <div className="mb-8">

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Users,  UserCheck, DollarSign, TrendingUp, Boxes } from 'lucide-react';
+import { Users,  UserCheck, DollarSign, TrendingUp, Boxes, Palette } from 'lucide-react';
 
 const API_URL = 'https://dokany-api-production.up.railway.app/admin/dashboard-stats';
 const PAYOUTS_URL = 'https://dokany-api-production.up.railway.app/api/payouts/summary';
-const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGo4dGJhMzAwMDQ2bXAzM2pmbjltZ2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM0NzM0NjcsImV4cCI6MTc1NDA3ODI2N30.LorMU1Oza-RTOV-xY1WRSBpRSEzdpHaUz-wzBUQ3c8U';
+const THEMES_URL = 'https://dokany-api-production.up.railway.app/themes';
 
 const Analytics: React.FC = () => {
   const [statsData, setStatsData] = useState<null | {
@@ -17,6 +17,7 @@ const Analytics: React.FC = () => {
     paidCount: number;
     notPaidCount: number;
   }>(null);
+  const [themesCount, setThemesCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,11 +25,19 @@ const Analytics: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No authentication token found");
+        setLoading(false);
+        return;
+      }
+
       try {
         // Fetch dashboard stats
         const statsRes = await fetch(API_URL, {
           headers: {
-            Authorization: `Bearer ${BEARER_TOKEN}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!statsRes.ok) throw new Error('Failed to fetch analytics');
@@ -38,12 +47,22 @@ const Analytics: React.FC = () => {
         // Fetch payouts summary
         const payoutsRes = await fetch(PAYOUTS_URL, {
           headers: {
-            Authorization: `Bearer ${BEARER_TOKEN}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!payoutsRes.ok) throw new Error('Failed to fetch payouts');
         const payouts = await payoutsRes.json();
         setPayoutsData(payouts);
+
+        // Fetch themes
+        const themesRes = await fetch(THEMES_URL, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!themesRes.ok) throw new Error('Failed to fetch themes');
+        const themes = await themesRes.json();
+        setThemesCount(themes.length);
       } catch (err: any) {
         setError(err.message || 'Unknown error');
       } finally {
@@ -83,6 +102,13 @@ const Analytics: React.FC = () => {
           color: 'bg-orange-500',
           change: '+23%',
         },
+        {
+          title: 'Total Themes',
+          value: themesCount !== null ? themesCount.toString() : '--',
+          icon: Palette,
+          color: 'bg-pink-500',
+          change: '+5%',
+        },
       ]
     : [];
 
@@ -98,7 +124,7 @@ const Analytics: React.FC = () => {
       ) : error ? (
         <div className="text-center py-10 text-lg text-red-500">{error}</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (

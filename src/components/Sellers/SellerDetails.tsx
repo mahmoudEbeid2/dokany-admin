@@ -61,10 +61,7 @@ const SellerDetails: React.FC = () => {
         </Link>
         <div className="flex items-center space-x-4">
           <img
-            src={
-              selectedSeller.profile_imge ||
-              `https://i.pravatar.cc/150?u=${selectedSeller.id}`
-            }
+            src={selectedSeller.profile_imge || `/public/CustomerImage.png`}
             alt={selectedSeller.user_name}
             className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
           />

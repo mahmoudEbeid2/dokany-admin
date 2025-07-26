@@ -117,7 +117,7 @@ const SellersList: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {sellers.map((seller: Seller) => {
             const profileImage =
-              seller.profile_imge || `https://i.pravatar.cc/150?u=${seller.id}`;
+              seller.profile_imge || `/public/CustomerImage.png`;
             return (
               <div
                 key={seller.id}

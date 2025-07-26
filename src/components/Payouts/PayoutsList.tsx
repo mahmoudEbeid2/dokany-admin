@@ -91,7 +91,7 @@ const PayoutsList: React.FC = () => {
                 <div className="text-base font-semibold text-gray-900">{payout.seller.user_name}</div>
                 <div className="text-sm text-gray-500">{payout.payout_method}</div>
               </div>
-              <span className="text-blue-700 font-bold">{payout.amount} $</span>
+              <span className="text-blue-700 font-bold">$ {payout.amount}</span>
             </div>
             <div className="flex items-center space-x-2">
               <button

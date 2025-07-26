@@ -65,13 +65,13 @@ const SellersList: React.FC = () => {
           let themeImg = '';
           if (s.theme_id) {
             const theme = themes.find(t => t.id === s.theme_id);
-            if (theme) themeImg = theme.imageUrl;
+            if (theme) themeImg = theme.image ;
           }
           // صورة عشوائية افتراضية
           if (!themeImg) themeImg = `https://i.pravatar.cc/150?img=${Math.floor(Math.random()*70)+1}`;
           return (
-            <div key={seller.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col items-center text-center space-y-3">
-              <img src={themeImg} alt="Seller" className="w-20 h-20 rounded-full object-cover mb-2 border" />
+            <div key={seller.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col items-center text-center space-y-1 max-w-[280px] ">
+              <img src={themeImg} alt="Seller" className="w-30 h-30 rounded-full object-cover mb-1 border-2" />
               <div className="text-lg font-bold text-gray-900">{s.user_name || seller.fullName || '---'}</div>
               <div className="text-sm text-gray-500">{s.email || seller.email || '---'}</div>
               <div className="text-sm text-gray-500">{s.phone || '---'}</div>

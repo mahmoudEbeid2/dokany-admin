@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
-import { Users, UserCheck, BarChart3, Palette, LogOut, Shield, DollarSign } from 'lucide-react';
+import { Users, UserCheck, BarChart3, Palette, LogOut, Shield, DollarSign, User } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
@@ -22,6 +22,7 @@ const Sidebar: React.FC = () => {
     { to: '/dashboard/managers', icon: UserCheck, label: 'Managers' },
     { to: '/dashboard/themes', icon: Palette, label: 'Themes' },
     { to: '/dashboard/payouts', icon: DollarSign, label: 'Payouts' },
+    { to: '/dashboard/profile', icon: User, label: 'My Profile' },
   ];
 
   return (

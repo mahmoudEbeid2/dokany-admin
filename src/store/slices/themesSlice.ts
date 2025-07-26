@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { API_CONFIG } from '../../config/api';
 
 export interface Theme {
   id: string;
@@ -14,13 +15,11 @@ interface ThemesState {
   error: string | null;
 }
 
-const API_URL = 'https://dokany-api-production.up.railway.app/themes';
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGphbXdoeTAwMDBiNmZkNHBsMTJ5c3AiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM0NzY1MjAsImV4cCI6MTc1NDA4MTMyMH0.KvCGcvcdl22xcN98AttbeNRYs34JjNSTmsuzNPFVGcQ';
-
 export const fetchThemes = createAsyncThunk('themes/fetchThemes', async (_, thunkAPI) => {
   try {
-    const res = await axios.get(API_URL, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
+    const token = localStorage.getItem('token');
+    const res = await axios.get(`${API_CONFIG.BASE_URL}/themes`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   } catch (err: any) {
@@ -30,8 +29,9 @@ export const fetchThemes = createAsyncThunk('themes/fetchThemes', async (_, thun
 
 export const addThemeAsync = createAsyncThunk('themes/addTheme', async (formData: FormData, thunkAPI) => {
   try {
-    const res = await axios.post(API_URL, formData, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
+    const token = localStorage.getItem('token');
+    const res = await axios.post(`${API_CONFIG.BASE_URL}/themes`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   } catch (err: any) {
@@ -41,8 +41,9 @@ export const addThemeAsync = createAsyncThunk('themes/addTheme', async (formData
 
 export const editThemeAsync = createAsyncThunk('themes/editTheme', async ({ id, data }: { id: string, data: FormData }, thunkAPI) => {
   try {
-    const res = await axios.put(`${API_URL}/${id}`, data, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
+    const token = localStorage.getItem('token');
+    const res = await axios.put(`${API_CONFIG.BASE_URL}/themes/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   } catch (err: any) {
@@ -52,8 +53,9 @@ export const editThemeAsync = createAsyncThunk('themes/editTheme', async ({ id, 
 
 export const deleteThemeAsync = createAsyncThunk('themes/deleteTheme', async (id: string, thunkAPI) => {
   try {
-    await axios.delete(`${API_URL}/${id}`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
+    const token = localStorage.getItem('token');
+    await axios.delete(`${API_CONFIG.BASE_URL}/themes/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return id;
   } catch (err: any) {

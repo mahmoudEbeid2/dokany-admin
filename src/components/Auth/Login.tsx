@@ -1,73 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import {
-  loginStart,
-  loginSuccess,
-  loginFailure,
-} from "../../store/slices/authSlice";
-import { Lock, Mail, User } from "lucide-react";
-import { RootState } from "../../store/store";
-
-
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { User, Mail, Lock } from 'lucide-react';
+import axios from 'axios';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+import { API_CONFIG } from '../../config/api';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-
-  useEffect(() => {
-    if (token && isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [token, isAuthenticated, navigate]);
-
+  const validatePassword = (password: string) => {
+    return password.length >= 6;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
+    setEmailError(false);
+    setPasswordError(false);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email.trim()) {
-      setEmailError("Email is required");
+    if (!validateEmail(email)) {
+      setEmailError(true);
+      setError('Please enter a valid email address.');
       return;
     }
 
-    if (!emailRegex.test(email)) {
-      setEmailError("Invalid email format. Please enter a valid email address.");
-      return;
-    }
-
-    if (!password.trim()) {
-      setPasswordError("Password is required");
-      return;
-    }
-
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters long.");
+    if (!validatePassword(password)) {
+      setPasswordError(true);
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
     setLoading(true);
     dispatch(loginStart());
 
-    const BaseURL = import.meta.env.VITE_API;
-
-
     try {
       const res = await axios.post(
-        `${BaseURL}/auth/admin/login`,
+        `${API_CONFIG.BASE_URL}/auth/admin/login`,
         { email, password }
       );
 

@@ -10,6 +10,7 @@ import ManagersList from './components/Managers/ManagersList';
 import Analytics from './components/Analytics/Analytics';
 import ThemesList from './components/Themes/ThemesList';
 import PayoutsList from './components/Payouts/PayoutsList';
+import Profile from './components/Profile/Profile';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="analytics" element={<Analytics />} />
               <Route path="themes" element={<ThemesList />} />
               <Route path="payouts" element={<PayoutsList />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />

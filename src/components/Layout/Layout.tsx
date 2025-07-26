@@ -8,13 +8,14 @@ const Layout: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-50 relative">
-      {/* Sidebar for desktop */}
-      <div className="hidden md:block">
+      {/* Sidebar for desktop (lg and above) */}
+      <div className="hidden lg:block">
         <Sidebar />
       </div>
-      {/* Sidebar Drawer for mobile */}
+      
+      {/* Sidebar Drawer for mobile and tablet */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 flex md:hidden">
+        <div className="fixed inset-0 z-40 flex lg:hidden">
           {/* Overlay */}
           <div
             className="fixed inset-0 bg-black bg-opacity-30"
@@ -33,16 +34,18 @@ const Layout: React.FC = () => {
           </div>
         </div>
       )}
-      {/* Hamburger button */}
+      
+      {/* Hamburger button for mobile and tablet */}
       {!sidebarOpen && (
         <button
-          className="absolute top-4 left-4 z-50 md:hidden bg-white p-2 rounded shadow"
+          className="absolute top-4 left-4 z-50 lg:hidden bg-white p-2 rounded shadow"
           onClick={() => setSidebarOpen(true)}
           aria-label="Open sidebar"
         >
           <Menu className="h-6 w-6" />
         </button>
       )}
+      
       <main className="flex-1 overflow-auto">
         <div className="p-8">
           <Outlet />

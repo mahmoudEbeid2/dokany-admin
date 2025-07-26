@@ -27,12 +27,15 @@ function App() {
                 </PrivateRoute>
               }
             >
-              <Route index element={<Navigate to="/dashboard/analytics" replace />} />
+              <Route
+                index
+                element={<Navigate to="/dashboard/analytics" replace />}
+              />
               <Route path="sellers" element={<SellersList />} />
               <Route path="managers" element={<ManagersList />} />
+              <Route path="payouts" element={<PayoutsList />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="themes" element={<ThemesList />} />
-              <Route path="payouts" element={<PayoutsList />} />
               <Route path="profile" element={<Profile />} />
             </Route>
             <Route path="/" element={<Navigate to="/login" replace />} />

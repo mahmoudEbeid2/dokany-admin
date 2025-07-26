@@ -14,7 +14,6 @@ interface ThemesState {
   loading: boolean;
   error: string | null;
 }
-
 export const fetchThemes = createAsyncThunk('themes/fetchThemes', async (_, thunkAPI) => {
   try {
     const token = localStorage.getItem('token');

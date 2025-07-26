@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Users,  UserCheck, DollarSign, TrendingUp, Boxes, Palette } from 'lucide-react';
 
-const API_URL = 'https://dokany-api-production.up.railway.app/admin/dashboard-stats';
-const PAYOUTS_URL = 'https://dokany-api-production.up.railway.app/api/payouts/summary';
-const THEMES_URL = 'https://dokany-api-production.up.railway.app/themes';
+    const BaseURL = import.meta.env.VITE_API;
+
+const API_URL = `${BaseURL}/admin/dashboard-stats`;
+const PAYOUTS_URL = `${BaseURL}/api/payouts/summary`;
+const THEMES_URL = `${BaseURL}/themes`;
 
 const Analytics: React.FC = () => {
   const [statsData, setStatsData] = useState<null | {

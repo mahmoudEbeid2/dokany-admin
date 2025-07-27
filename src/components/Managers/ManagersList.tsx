@@ -11,7 +11,7 @@ import {
 import ManagerForm from "./ManagerForm";
 // Assuming you have a ManagerDetails component similar to SellerDetails
 // import ManagerDetails from './ManagerDetails';
-import { Trash2, Plus, Edit, Search, UserCheck, Loader, Mail, Phone, MapPin } from "lucide-react";
+import { Trash2, Plus, Edit, Search, UserCheck, Loader, Mail, Phone, MapPin, X, User, Shield } from "lucide-react";
 
 const ManagersList: React.FC = () => {
   const { managers, loading, error } = useSelector(
@@ -21,6 +21,8 @@ const ManagersList: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingManager, setEditingManager] = useState<Manager | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedManager, setSelectedManager] = useState<Manager | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -64,6 +66,16 @@ const ManagersList: React.FC = () => {
     }
   };
 
+  const handleCardClick = (manager: Manager) => {
+    setSelectedManager(manager);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setShowDetailsModal(false);
+    setSelectedManager(null);
+  };
+
   // Generate initials for avatar fallback
   const getInitials = (name: string) => {
     return name
@@ -97,6 +109,158 @@ const ManagersList: React.FC = () => {
       </div>
     );
   }
+
+  // Manager Details Modal
+  const ManagerDetailsModal = () => {
+    if (!selectedManager) return null;
+
+    const profileImage = selectedManager.profile_imge;
+    const initials = getInitials(selectedManager.name || '');
+    const avatarColor = getAvatarColor(selectedManager.name || '');
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900">Manager Details</h2>
+            <button
+              onClick={handleCloseDetailsModal}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="h-6 w-6 text-gray-500" />
+            </button>
+          </div>
+
+          {/* Modal Content */}
+          <div className="p-6">
+            {/* Profile Section */}
+            <div className="text-center mb-8">
+              <div className="relative inline-block">
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt={selectedManager.name}
+                    className="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow-xl"
+                  />
+                ) : (
+                  <div className={`w-32 h-32 rounded-full ${avatarColor} flex items-center justify-center border-4 border-blue-200 shadow-xl`}>
+                    <span className="text-white font-bold text-3xl">{initials}</span>
+                  </div>
+                )}
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mt-4 mb-2">
+                {selectedManager.name}
+              </h3>
+              <p className="text-gray-600 text-lg">{selectedManager.email}</p>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <User className="h-5 w-5 mr-2 text-blue-600" />
+                  Personal Information
+                </h4>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-600 w-24">Name:</span>
+                    <span className="text-gray-900">{selectedManager.name}</span>
+                  </div>
+                  
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-600 w-24">Email:</span>
+                    <span className="text-gray-900">{selectedManager.email}</span>
+                  </div>
+
+                  {selectedManager.phone && (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-600 w-24">Phone:</span>
+                      <span className="text-gray-900">{selectedManager.phone}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Location Information */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <MapPin className="h-5 w-5 mr-2 text-green-600" />
+                  Location Information
+                </h4>
+                
+                <div className="space-y-3">
+                  {selectedManager.city && (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-600 w-24">City:</span>
+                      <span className="text-gray-900">{selectedManager.city}</span>
+                    </div>
+                  )}
+
+                  {selectedManager.governorate && (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-600 w-24">Governorate:</span>
+                      <span className="text-gray-900">{selectedManager.governorate}</span>
+                    </div>
+                  )}
+
+                  {selectedManager.country && (
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-600 w-24">Country:</span>
+                      <span className="text-gray-900">{selectedManager.country}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Information */}
+            <div className="mt-8 space-y-4">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Shield className="h-5 w-5 mr-2 text-purple-600" />
+                Account Information
+              </h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-600 w-24">Role:</span>
+                  <span className="text-gray-900 capitalize">Admin</span>
+                </div>
+
+                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-600 w-24">User ID:</span>
+                  <span className="text-gray-900 text-sm">{selectedManager.id}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+            <button
+              onClick={() => {
+                handleCloseDetailsModal();
+                handleOpenForm(selectedManager);
+              }}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            >
+              <Edit className="h-4 w-4" />
+              <span>Edit Manager</span>
+            </button>
+            <button
+              onClick={handleCloseDetailsModal}
+              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 overflow-x-hidden">
@@ -159,6 +323,7 @@ const ManagersList: React.FC = () => {
               <div
                 key={manager.id}
                 className="group bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                onClick={() => handleCardClick(manager)}
               >
                 {/* Card Header with Gradient */}
                 <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-t-2xl p-4 sm:p-6 text-white">
@@ -231,6 +396,10 @@ const ManagersList: React.FC = () => {
 
         {showForm && (
           <ManagerForm onClose={handleCloseForm} manager={editingManager} />
+        )}
+
+        {showDetailsModal && selectedManager && (
+          <ManagerDetailsModal />
         )}
 
         {/* Floating Action Button for Mobile */}

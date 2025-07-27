@@ -64,6 +64,13 @@ const SellersList: React.FC = () => {
     dispatch(clearError());
     setEditingSeller(seller);
     setShowForm(true);
+    // Ensure loading state is reset when opening form
+    if (loading) {
+      // Force reset loading state by dispatching a dummy action
+      setTimeout(() => {
+        dispatch(clearError());
+      }, 0);
+    }
   };
 
   const handleCardClick = (seller: Seller) => {
@@ -98,6 +105,8 @@ const SellersList: React.FC = () => {
   const handleCloseForm = () => {
     setShowForm(false);
     setEditingSeller(null);
+    // Clear any loading state when form is closed
+    dispatch(clearError());
   };
 
   const handleCloseDetailsModal = () => {
@@ -337,8 +346,8 @@ const SellersList: React.FC = () => {
           </div>
         </div>
 
-        {/* Loading State */}
-        {loading && (
+        {/* Loading State - Only show when form is not open */}
+        {loading && !showForm && (
           <LoaderSpinner 
             size="lg" 
             color="blue" 
@@ -358,7 +367,7 @@ const SellersList: React.FC = () => {
         )}
 
         {/* Error State - Only show for actual errors, not search results */}
-        {error && !loading && !isSearching && !searchQuery && (
+        {error && !loading && !isSearching && !searchQuery && !showForm && (
           <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl flex items-center mb-6 shadow-lg">
             <AlertCircle className="h-6 w-6 mr-3 flex-shrink-0" />
             <div>
@@ -369,7 +378,7 @@ const SellersList: React.FC = () => {
         )}
 
         {/* Enhanced Sellers Grid */}
-        {!loading && !isSearching && sellers.length > 0 && (
+        {(!loading || showForm) && !isSearching && sellers.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {sellers.map((seller) => {
               const initials = getInitials(seller.f_name + ' ' + seller.l_name);
@@ -470,7 +479,7 @@ const SellersList: React.FC = () => {
         )}
 
         {/* Empty State - Show when no sellers found or search returns no results */}
-        {!loading && !isSearching && sellers.length === 0 && (
+        {(!loading || showForm) && !isSearching && sellers.length === 0 && (
           <div className="text-center py-16">
             <p className="text-gray-600 text-lg">
               No results found

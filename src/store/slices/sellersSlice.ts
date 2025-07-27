@@ -185,6 +185,7 @@ const sellersSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+      state.loading = false;
     },
   },
   extraReducers: (builder: ActionReducerMapBuilder<SellersState>) => {
@@ -201,6 +202,7 @@ const sellersSlice = createSlice({
         (state, action: PayloadAction<{ seller: Seller }>) => {
           state.sellers.push(action.payload.seller);
           state.loading = false;
+          state.error = null;
         }
       )
       .addCase(
@@ -213,6 +215,7 @@ const sellersSlice = createSlice({
             state.sellers[index] = action.payload;
           }
           state.loading = false;
+          state.error = null;
         }
       )
       .addCase(
@@ -238,6 +241,24 @@ const sellersSlice = createSlice({
           state.loading = false;
         }
       )
+      .addCase(
+        addSeller.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = typeof action.payload === 'string' 
+            ? action.payload 
+            : action.payload?.message || "Failed to add seller";
+        }
+      )
+      .addCase(
+        updateSeller.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = typeof action.payload === 'string' 
+            ? action.payload 
+            : action.payload?.message || "Failed to update seller";
+        }
+      )
       .addMatcher(
         (action: PayloadAction) => action.type.endsWith("/pending"),
         (state) => {
@@ -247,14 +268,17 @@ const sellersSlice = createSlice({
       )
       .addMatcher(
         (action: PayloadAction) => action.type.endsWith("/rejected"),
-        (state, action: PayloadAction<string>) => {
+        (state, action: PayloadAction<any>) => {
           state.loading = false;
           if (
             action.type.includes("fetchSellers") ||
             action.type.includes("searchSellers")
           ) {
-            state.error =
-              action.payload || "An error occurred while fetching data.";
+            // Handle both string and object payloads
+            const errorMessage = typeof action.payload === 'string' 
+              ? action.payload 
+              : action.payload?.message || "An error occurred while fetching data.";
+            state.error = errorMessage;
           }
         }
       );

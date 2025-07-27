@@ -4,6 +4,7 @@ import {
   addSeller,
   updateSeller,
   Seller,
+  clearError,
 } from "../../store/slices/sellersSlice";
 import { fetchThemes } from "../../store/slices/themesSlice";
 import { RootState, AppDispatch } from "../../store/store";
@@ -16,9 +17,11 @@ interface SellerFormProps {
 
 const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
   const themes = useSelector((state: RootState) => state.themes.themes);
+  const themesLoading = useSelector((state: RootState) => state.themes.loading);
   const { loading } = useSelector((state: RootState) => state.sellers);
   const dispatch = useDispatch<AppDispatch>();
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [formLoading, setFormLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     user_name: "",
@@ -81,6 +84,10 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormErrors({});
+    setFormLoading(true);
+    
+    // Clear any existing loading state from Redux
+    dispatch(clearError());
 
     const apiFormData = new FormData();
     const sanitizedPhone = formData.phone.replace(/\D/g, "");
@@ -107,6 +114,8 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
       } else {
         await dispatch(addSeller(apiFormData)).unwrap();
       }
+      // Clear any loading state before closing
+      dispatch(clearError());
       onClose();
     } catch (error) {
       const typedError = error as {
@@ -121,6 +130,10 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
           form: typedError?.message || "An unexpected error occurred.",
         });
       }
+    } finally {
+      setFormLoading(false);
+      // Clear any loading state from Redux
+      dispatch(clearError());
     }
   };
 
@@ -132,8 +145,12 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
             {seller ? "Edit Seller" : "Add New Seller"}
           </h2>
           <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            onClick={() => {
+              dispatch(clearError());
+              onClose();
+            }}
+            disabled={formLoading}
+            className="text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <X />
           </button>
@@ -304,8 +321,9 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
                 value={formData.theme_id}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                disabled={themesLoading}
               >
-                <option value="">Select a theme</option>
+                <option value="">{themesLoading ? "Loading themes..." : "Select a theme"}</option>
                 {themes.map((theme) => (
                   <option key={theme.id} value={theme.id}>
                     {theme.name}
@@ -347,15 +365,16 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
           <div className="flex space-x-3 pt-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={formLoading || themesLoading}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Saving..." : seller ? "Update Seller" : "Add Seller"}
+              {formLoading ? "Saving..." : seller ? "Update Seller" : "Add Seller"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              disabled={formLoading}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>

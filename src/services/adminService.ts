@@ -19,6 +19,12 @@ export interface CreateAdminData {
   profile_imge?: File | null;
 }
 
+export interface PasswordChangeData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 export const adminService = {
   // Fetch all admins
   async getAdmins(): Promise<Manager[]> {
@@ -237,24 +243,42 @@ export const adminService = {
       console.log('User ID:', userId);
       console.log('Full URL:', `${API_CONFIG.BASE_URL}${API_ENDPOINTS.ADMINS}/${userId}`);
       
-      // Convert FormData to JSON for testing
-      const jsonData: any = {};
-      for (let [key, value] of profileData.entries()) {
-        if (key !== 'profile_imge') {
+      // Check if we have a file to upload
+      const hasFile = profileData.has('profile_imge');
+      console.log('Has file to upload:', hasFile);
+      
+      let response;
+      
+      if (hasFile) {
+        // Use FormData for file upload
+        console.log('Using FormData for file upload...');
+        response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.ADMINS}/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            // Don't set Content-Type for FormData, let browser set it with boundary
+          },
+          body: profileData,
+        });
+      } else {
+        // Use JSON for text-only updates
+        console.log('Using JSON for text-only update...');
+        const jsonData: any = {};
+        for (let [key, value] of profileData.entries()) {
           jsonData[key] = value;
         }
+        
+        console.log('JSON data to send:', jsonData);
+        
+        response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.ADMINS}/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jsonData),
+        });
       }
-      
-      console.log('JSON data to send:', jsonData);
-      
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.ADMINS}/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });
 
       console.log('Response status:', response.status);
       console.log('Response status text:', response.statusText);
@@ -277,6 +301,32 @@ export const adminService = {
       return data.admin || data;
     } catch (error) {
       console.error('Error updating profile:', error);
+      throw error;
+    }
+  },
+
+  // Change password
+  async changePassword(passwordData: PasswordChangeData): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.CHANGE_PASSWORD}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(passwordData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      // Password change successful
+      console.log('Password changed successfully');
+    } catch (error) {
+      console.error('Error changing password:', error);
       throw error;
     }
   },

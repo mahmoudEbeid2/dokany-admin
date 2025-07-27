@@ -17,5 +17,6 @@ export const getHeaders = () => {
 
 // API Endpoints
 export const API_ENDPOINTS = {
-  ADMINS: '/admin/admins'
+  ADMINS: '/admin/admins',
+  CHANGE_PASSWORD: '/admin/admins/change-password'
 }; 

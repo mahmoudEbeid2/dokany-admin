@@ -5,6 +5,7 @@ import {
   updateSeller,
   Seller,
 } from "../../store/slices/sellersSlice";
+import { fetchThemes } from "../../store/slices/themesSlice";
 import { RootState, AppDispatch } from "../../store/store";
 import { X, AlertCircle } from "lucide-react";
 
@@ -35,6 +36,10 @@ const SellerForm: React.FC<SellerFormProps> = ({ seller, onClose }) => {
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    dispatch(fetchThemes() as any);
+  }, [dispatch]);
 
   useEffect(() => {
     if (seller) {

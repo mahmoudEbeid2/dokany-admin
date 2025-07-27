@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store/store';
-import { User, Mail, Phone, MapPin, Camera, Save, X, Edit, Shield, Loader, CheckCircle, AlertCircle } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Camera, Save, X, Edit, Shield, Loader, CheckCircle, AlertCircle, Lock, Eye, EyeOff } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import LoaderSpinner from '../ui/Loader';
 
@@ -15,8 +15,14 @@ interface ProfileData {
   city: string;
   governorate: string;
   country: string;
-  role: string;
-  profile_imge: string | null;
+  role?: string;
+  profile_imge?: string | null;
+}
+
+interface PasswordChangeData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
 }
 
 const Profile: React.FC = () => {
@@ -30,6 +36,20 @@ const Profile: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
+  // Password change states
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [passwordData, setPasswordData] = useState<PasswordChangeData>({
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
 
   // Generate initials for avatar fallback
   const getInitials = (firstName: string, lastName: string) => {
@@ -75,9 +95,22 @@ const Profile: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
+      
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      setError(null); // Clear any previous errors
     }
   };
 
@@ -130,7 +163,7 @@ const Profile: React.FC = () => {
 
       if (selectedFile) {
         formData.append('profile_imge', selectedFile);
-        console.log('File selected:', selectedFile.name);
+        console.log('File selected:', selectedFile.name, 'Size:', selectedFile.size);
       }
 
       console.log('FormData created, calling updateProfile...');
@@ -150,11 +183,65 @@ const Profile: React.FC = () => {
     }
   };
 
+  // Handle password change
+  const handlePasswordChange = async () => {
+    // Validate password fields
+    if (!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_password) {
+      setError('All password fields are required');
+      return;
+    }
+
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      setError('New password and confirm password do not match');
+      return;
+    }
+
+    if (passwordData.new_password.length < 6) {
+      setError('New password must be at least 6 characters long');
+      return;
+    }
+
+    try {
+      setChangingPassword(true);
+      setError(null);
+      setSuccess(null);
+
+      // Call password change API
+      await adminService.changePassword(passwordData);
+      
+      setSuccess('Password changed successfully!');
+      setPasswordData({
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+      });
+      setShowPasswordSection(false);
+    } catch (err: any) {
+      console.error('Error changing password:', err);
+      setError(err.message || 'Failed to change password');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   // Handle input changes
   const handleInputChange = (field: keyof ProfileData, value: string) => {
     if (profileData) {
       setProfileData({ ...profileData, [field]: value });
     }
+  };
+
+  // Handle password input changes
+  const handlePasswordInputChange = (field: keyof PasswordChangeData, value: string) => {
+    setPasswordData({ ...passwordData, [field]: value });
+  };
+
+  // Toggle password visibility
+  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
   };
 
   if (loading) {
@@ -235,7 +322,7 @@ const Profile: React.FC = () => {
                 <div className="flex flex-col items-center lg:items-start lg:flex-row gap-4">
                   {/* Profile Image */}
                   <div className="relative">
-                    {profileData.profile_imge || previewUrl ? (
+                    {(profileData.profile_imge || previewUrl) ? (
                       <img
                         src={previewUrl || profileData.profile_imge || ''}
                         alt="Profile"
@@ -243,13 +330,17 @@ const Profile: React.FC = () => {
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
-                          target.nextElementSibling?.classList.remove('hidden');
+                          // Show initials fallback
+                          const fallback = target.parentElement?.querySelector('.profile-fallback');
+                          if (fallback) {
+                            fallback.classList.remove('hidden');
+                          }
                         }}
                       />
                     ) : null}
                     
                     {(!profileData.profile_imge && !previewUrl) && (
-                      <div className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full ${avatarColor} flex items-center justify-center border-4 border-white/30 shadow-xl`}>
+                      <div className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full ${avatarColor} flex items-center justify-center border-4 border-white/30 shadow-xl profile-fallback`}>
                         <span className="text-white text-xl sm:text-2xl font-bold">{initials}</span>
                       </div>
                     )}
@@ -274,7 +365,7 @@ const Profile: React.FC = () => {
                     <p className="text-blue-100 text-lg mb-2">@{profileData.user_name}</p>
                     <div className="flex items-center justify-center lg:justify-start">
                       <Shield className="h-4 w-4 mr-2" />
-                      <span className="text-sm capitalize">{profileData.role}</span>
+                      <span className="text-sm capitalize">{profileData.role || 'Admin'}</span>
                     </div>
                   </div>
                 </div>
@@ -473,7 +564,7 @@ const Profile: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Role</p>
-                          <p className="font-bold capitalize text-gray-900">{profileData.role}</p>
+                          <p className="font-bold capitalize text-gray-900">{profileData.role || 'Admin'}</p>
                         </div>
                       </div>
                       
@@ -490,6 +581,116 @@ const Profile: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Password Change Section */}
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <Lock className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Change Password
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordSection(!showPasswordSection)}
+                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  <Lock className="h-4 w-4" />
+                  <span>{showPasswordSection ? 'Hide' : 'Change Password'}</span>
+                </button>
+              </div>
+
+              {showPasswordSection && (
+                <div className="bg-gradient-to-r from-red-50 to-red-100 rounded-2xl p-6 border border-red-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Current Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPasswords.current ? 'text' : 'password'}
+                          value={passwordData.current_password}
+                          onChange={(e) => handlePasswordInputChange('current_password', e.target.value)}
+                          className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter current password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => togglePasswordVisibility('current')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPasswords.current ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        New Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPasswords.new ? 'text' : 'password'}
+                          value={passwordData.new_password}
+                          onChange={(e) => handlePasswordInputChange('new_password', e.target.value)}
+                          className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter new password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => togglePasswordVisibility('new')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPasswords.new ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Confirm New Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPasswords.confirm ? 'text' : 'password'}
+                          value={passwordData.confirm_password}
+                          onChange={(e) => handlePasswordInputChange('confirm_password', e.target.value)}
+                          className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Confirm new password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => togglePasswordVisibility('confirm')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPasswords.confirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={handlePasswordChange}
+                        disabled={changingPassword}
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 flex items-center space-x-2 disabled:opacity-50 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        {changingPassword ? (
+                          <Loader size={18} className="animate-spin" />
+                        ) : (
+                          <Lock className="h-4 w-4" />
+                        )}
+                        <span>{changingPassword ? 'Changing...' : 'Change Password'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

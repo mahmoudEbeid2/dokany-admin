@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Shield, Sparkles, Eye, EyeOff, Loader } from 'lucide-react';
-import axios from 'axios';
-import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
-import { API_CONFIG } from '../../config/api';
-
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  User,
+  Mail,
+  Lock,
+  Shield,
+  Sparkles,
+  Eye,
+  EyeOff,
+  Loader,
+} from "lucide-react";
+import axios from "axios";
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from "../../store/slices/authSlice";
+import { API_CONFIG } from "../../config/api";
+import { Link } from "react-router-dom";
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -29,19 +42,19 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setEmailError(false);
     setPasswordError(false);
 
     if (!validateEmail(email)) {
       setEmailError(true);
-      setError('Please enter a valid email address.');
+      setError("Please enter a valid email address.");
       return;
     }
 
     if (!validatePassword(password)) {
       setPasswordError(true);
-      setError('Password must be at least 6 characters long.');
+      setError("Password must be at least 6 characters long.");
       return;
     }
 
@@ -49,20 +62,19 @@ const Login: React.FC = () => {
     dispatch(loginStart());
 
     try {
-      const res = await axios.post(
-        `${API_CONFIG.BASE_URL}/auth/admin/login`,
-        { email, password }
-      );
+      const res = await axios.post(`${API_CONFIG.BASE_URL}/auth/admin/login`, {
+        email,
+        password,
+      });
 
       const { user, token } = res.data;
       localStorage.setItem("token", token);
       dispatch(loginSuccess(user));
       navigate("/dashboard");
-
     } catch (err: any) {
-
       const message =
-        err?.response?.data?.message || "Invalid email or password. Please try again.";
+        err?.response?.data?.message ||
+        "Invalid email or password. Please try again.";
       setError(message);
       dispatch(loginFailure());
     } finally {
@@ -94,7 +106,9 @@ const Login: React.FC = () => {
               </h2>
               <Sparkles className="h-4 w-4 text-purple-500" />
             </div>
-            <p className="text-gray-600 text-base">Welcome back! Please sign in to continue</p>
+            <p className="text-gray-600 text-base">
+              Welcome back! Please sign in to continue
+            </p>
           </div>
 
           {/* Form */}
@@ -117,7 +131,9 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 ${
-                    emailError ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200'
+                    emailError
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                      : "border-gray-200"
                   }`}
                   placeholder="admin@example.com"
                   required
@@ -149,7 +165,9 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 ${
-                    passwordError ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200'
+                    passwordError
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                      : "border-gray-200"
                   }`}
                   placeholder="••••••••"
                   required
@@ -159,7 +177,11 @@ const Login: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               {passwordError && !error && (
@@ -197,7 +219,14 @@ const Login: React.FC = () => {
               )}
             </button>
           </form>
-
+          <div className="mt-4 text-center">
+            <Link
+              to="/admin-forgot-password"
+              className="text-sm font-medium text-blue-600 hover:text-blue-800"
+            >
+              Forgot Password?
+            </Link>
+          </div>
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">
@@ -211,4 +240,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-

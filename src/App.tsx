@@ -1,17 +1,22 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './store/store';
-import Login from './components/Auth/Login';
-import PrivateRoute from './components/Auth/PrivateRoute';
-import Layout from './components/Layout/Layout';
-import SellersList from './components/Sellers/SellersList';
-import ManagersList from './components/Managers/ManagersList';
-import Analytics from './components/Analytics/Analytics';
-import ThemesList from './components/Themes/ThemesList';
-import PayoutsList from './components/Payouts/PayoutsList';
-import Profile from './components/Profile/Profile';
-
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+import Login from "./components/Auth/Login";
+import PrivateRoute from "./components/Auth/PrivateRoute";
+import Layout from "./components/Layout/Layout";
+import SellersList from "./components/Sellers/SellersList";
+import ManagersList from "./components/Managers/ManagersList";
+import Analytics from "./components/Analytics/Analytics";
+import ThemesList from "./components/Themes/ThemesList";
+import PayoutsList from "./components/Payouts/PayoutsList";
+import Profile from "./components/Profile/Profile";
+import AdminForgotPassword from "./components/Auth/AdminForgotPassword";
 function App() {
   return (
     <Provider store={store}>
@@ -19,6 +24,10 @@ function App() {
         <div className="h-screen bg-gray-50 overflow-hidden">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/admin-forgot-password"
+              element={<AdminForgotPassword />}
+            />
             <Route
               path="/dashboard"
               element={

@@ -219,14 +219,6 @@ const Login: React.FC = () => {
               )}
             </button>
           </form>
-          <div className="mt-4 text-center">
-            <Link
-              to="/admin-forgot-password"
-              className="text-sm font-medium text-blue-600 hover:text-blue-800"
-            >
-              Forgot Password?
-            </Link>
-          </div>
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">

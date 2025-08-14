@@ -154,9 +154,21 @@ const ThemesList: React.FC = () => {
                         <div className="text-sm font-medium text-gray-900">Custom</div>
                       </div>
                     </div>
+                    
+
 
                     {/* Action Buttons */}
                     <div className="flex justify-center space-x-3">
+                      {theme.preview_url && (
+                        <button
+                          onClick={() => window.open(theme.preview_url, '_blank')}
+                          disabled={isDeleting}
+                          className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                          title="Preview Theme"
+                        >
+                          <Eye size={18} />
+                        </button>
+                      )}
                       <button
                         onClick={() => handleEdit(theme)}
                         disabled={isDeleting}

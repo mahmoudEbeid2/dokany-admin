@@ -9,19 +9,20 @@ interface ThemeFormProps {
 }
 
 const ThemeForm: React.FC<ThemeFormProps> = ({ onClose, editTheme }) => {
-  const [formData, setFormData] = useState<{ name: string; image: File | null }>({
+  const [formData, setFormData] = useState<{ name: string; image: File | null; preview_url: string }>({
     name: '',
     image: null,
+    preview_url: '',
   });
   const [preview, setPreview] = useState<string | null>(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (editTheme) {
-      setFormData({ name: editTheme.name || '', image: null });
+      setFormData({ name: editTheme.name || '', image: null, preview_url: editTheme.preview_url || '' });
       setPreview(editTheme.image || null);
     } else {
-      setFormData({ name: '', image: null });
+      setFormData({ name: '', image: null, preview_url: '' });
       setPreview(null);
     }
   }, [editTheme]);
@@ -40,6 +41,7 @@ const ThemeForm: React.FC<ThemeFormProps> = ({ onClose, editTheme }) => {
     e.preventDefault();
     const data = new FormData();
     data.append('name', formData.name);
+    data.append('preview_url', formData.preview_url);
     if (formData.image) {
       data.append('image', formData.image);
     } else if (editTheme && editTheme.image) {
@@ -79,6 +81,20 @@ const ThemeForm: React.FC<ThemeFormProps> = ({ onClose, editTheme }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., Dark Mode, Ocean Blue"
               required
+            />
+          </div>
+          <div>
+            <label htmlFor="preview_url" className="block text-sm font-medium text-gray-700 mb-2">
+              Preview URL
+            </label>
+            <input
+              type="url"
+              id="preview_url"
+              name="preview_url"
+              value={formData.preview_url}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://example.com/preview"
             />
           </div>
           <div>

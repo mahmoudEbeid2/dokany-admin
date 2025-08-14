@@ -6,6 +6,7 @@ export interface Theme {
   id: string;
   name: string;
   preview_image: string;
+  preview_url: string;
   image_public_id: string;
 }
 

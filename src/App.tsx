@@ -17,6 +17,8 @@ import ThemesList from "./components/Themes/ThemesList";
 import PayoutsList from "./components/Payouts/PayoutsList";
 import Profile from "./components/Profile/Profile";
 import AdminForgotPassword from "./components/Auth/AdminForgotPassword";
+import { Campaigns, CreateCampaign, CampaignDetails } from "./components/Campaigns";
+
 function App() {
   return (
     <Provider store={store}>
@@ -47,6 +49,21 @@ function App() {
               <Route path="themes" element={<ThemesList />} />
               <Route path="profile" element={<Profile />} />
             </Route>
+            
+            {/* Campaign Routes */}
+            <Route
+              path="/campaigns"
+              element={
+                <PrivateRoute>
+                  <Layout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Campaigns />} />
+              <Route path="new" element={<CreateCampaign />} />
+              <Route path=":id" element={<CampaignDetails />} />
+            </Route>
+            
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>

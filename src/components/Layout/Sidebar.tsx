@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
-import { Users, UserCheck, BarChart3, Palette, LogOut, Shield, DollarSign, User, Sparkles } from 'lucide-react';
+import { Users, UserCheck, BarChart3, Palette, LogOut, Shield, DollarSign, User, Sparkles, Mail } from 'lucide-react';
 
 interface SidebarProps {
   onItemClick?: () => void;
@@ -55,6 +55,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       label: 'Themes',
       color: 'from-pink-500 to-pink-600',
       hoverColor: 'hover:from-pink-600 hover:to-pink-700'
+    },
+    { 
+      to: '/campaigns', 
+      icon: Mail, 
+      label: 'Campaigns',
+      color: 'from-orange-500 to-orange-600',
+      hoverColor: 'hover:from-orange-600 hover:to-orange-700'
     },
     { 
       to: '/dashboard/payouts', 

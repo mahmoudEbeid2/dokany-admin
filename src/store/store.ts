@@ -4,6 +4,7 @@ import sellersSlice from './slices/sellersSlice';
 import managersSlice from './slices/managersSlice';
 import themesSlice from './slices/themesSlice';
 import analyticsSlice from './slices/analyticsSlice';
+import campaignsSlice from './slices/campaignsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     managers: managersSlice,
     themes: themesSlice,
     analytics: analyticsSlice,
+    campaigns: campaignsSlice,
   },
 });
 

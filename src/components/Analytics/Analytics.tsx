@@ -120,12 +120,12 @@ const Analytics: React.FC = () => {
         description: 'Registered customers'
       },
       {
-        title: 'Total Earnings',
-        value: `$${statsData.totalEarnings.toLocaleString()}`,
+        title: 'Platform Revenue (10%)',
+        value: `$${Math.round(statsData.totalEarnings * 0.1).toLocaleString()}`,
         icon: DollarSign,
         color: 'bg-orange-500',
         change: '+23%',
-        description: 'Platform revenue'
+        description: 'Platform commission (10%)'
       },
       {
         title: 'Total Themes',

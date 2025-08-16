@@ -154,22 +154,22 @@ const Campaigns: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-             {/* Header */}
-       <div className="mb-8">
+      {/* Header */}
+      <div className="mb-8">
          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-           <div>
+          <div>
              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Campaign Management</h1>
-             <p className="text-gray-600">Manage and send advertising campaigns to sellers</p>
-           </div>
-                       <button
-              onClick={() => navigate('/campaigns/new')}
+            <p className="text-gray-600">Manage and send advertising campaigns to sellers</p>
+          </div>
+          <button
+            onClick={() => navigate('/campaigns/new')}
               className="hidden lg:flex bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg items-center gap-2 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
+          >
+            <Plus className="w-5 h-5" />
               <span>Create New Campaign</span>
-            </button>
-         </div>
-       </div>
+          </button>
+        </div>
+      </div>
 
       {/* Error Message */}
       {error && (
@@ -195,7 +195,7 @@ const Campaigns: React.FC = () => {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
@@ -262,7 +262,7 @@ const Campaigns: React.FC = () => {
             </div>
           </div>
           
-                     <div className="flex gap-3">
+          <div className="flex gap-3">
              <select
                value={typeFilter}
                onChange={(e) => setTypeFilter(e.target.value)}
@@ -274,30 +274,30 @@ const Campaigns: React.FC = () => {
                                <option value="PUSH_NOTIFICATION">Push</option>
              </select>
              
-             <select
-               value={statusFilter}
-               onChange={(e) => setStatusFilter(e.target.value)}
-               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-             >
-               <option value="all">All Statuses</option>
-               <option value="PENDING">Pending</option>
-               <option value="ACTIVE">Active</option>
-               <option value="COMPLETED">Completed</option>
-               <option value="CANCELLED">Cancelled</option>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="ACTIVE">Active</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
                <option value="FAILED">Failed</option>
-             </select>
-           </div>
+            </select>
+          </div>
         </div>
       </div>
 
              {/* Campaigns Cards */}
        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
          <div className="mb-6">
-           <h3 className="text-lg font-semibold text-gray-900">Campaigns List</h3>
-         </div>
-         
+          <h3 className="text-lg font-semibold text-gray-900">Campaigns List</h3>
+        </div>
+        
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-           {filteredCampaigns.map((campaign) => (
+              {filteredCampaigns.map((campaign) => (
              <div key={campaign.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
                {/* Header */}
                <div className="flex items-center justify-between mb-3">
@@ -337,7 +337,7 @@ const Campaigns: React.FC = () => {
                    month: 'short',
                    day: 'numeric'
                  })}</span>
-               </div>
+                    </div>
                
                {/* Target */}
                <div className="mb-3 text-xs text-gray-600">
@@ -352,43 +352,43 @@ const Campaigns: React.FC = () => {
                  ) : (
                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">
                      All Targets
-                   </span>
+                    </span>
                  )}
                </div>
                
                {/* Actions */}
                <div className="flex justify-end">
-                 <button 
-                   onClick={() => handleViewCampaign(campaign.id)}
+                      <button 
+                        onClick={() => handleViewCampaign(campaign.id)}
                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors"
                  >
                    View Details
-                 </button>
-               </div>
+                      </button>
+                    </div>
              </div>
-           ))}
-         </div>
+              ))}
+        </div>
 
-                 {filteredCampaigns.length === 0 && (
+        {filteredCampaigns.length === 0 && (
            <div className="text-center py-8">
              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                <Mail className="w-8 h-8 text-gray-400" />
              </div>
              <h3 className="text-lg font-medium text-gray-900 mb-2">
-               {campaigns.length === 0 ? 'No campaigns found' : 'No campaigns match your filters'}
-             </h3>
+              {campaigns.length === 0 ? 'No campaigns found' : 'No campaigns match your filters'}
+            </h3>
              <p className="text-gray-600 mb-6">
-               {campaigns.length === 0 ? 'Start by creating a new campaign' : 'Try adjusting your search or filters'}
-             </p>
-             <button
-               onClick={() => navigate('/campaigns/new')}
+              {campaigns.length === 0 ? 'Start by creating a new campaign' : 'Try adjusting your search or filters'}
+            </p>
+              <button
+                onClick={() => navigate('/campaigns/new')}
                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-             >
-               Create Campaign
-             </button>
-           </div>
-                   )}
-       </div>
+              >
+                Create Campaign
+              </button>
+          </div>
+        )}
+      </div>
 
        {/* Floating Action Button - Mobile Only */}
        <button
@@ -398,8 +398,8 @@ const Campaigns: React.FC = () => {
        >
          <Plus className="w-6 h-6" />
        </button>
-     </div>
-   );
- };
+    </div>
+  );
+};
 
 export default Campaigns;

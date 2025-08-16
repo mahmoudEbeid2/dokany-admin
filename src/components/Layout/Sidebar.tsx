@@ -13,7 +13,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
+    if (window.confirm('هل أنت متأكد من تسجيل الخروج؟')) {
       localStorage.removeItem('token');
       dispatch(logout());
       navigate('/login');
@@ -82,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   return (
     <div className="bg-white/95 backdrop-blur-sm h-screen w-64 shadow-2xl border-r border-gray-100 flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
+      <div className="flex-shrink-0 p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
         <div className="flex items-center space-x-3">
           <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
             <Shield className="h-7 w-7 text-white" />
@@ -100,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto sidebar-scrollbar">
         {navigationItems.map(({ to, icon: Icon, label, color, hoverColor }) => (
           <NavLink
             key={to}
@@ -131,13 +131,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
+      <div className="flex-shrink-0 p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
         <button
           onClick={handleLogout}
-          className="group flex items-center space-x-3 w-full px-4 py-3 text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-md"
+          className="group flex items-center space-x-3 w-full px-4 py-3 text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-md border border-red-200 hover:border-red-300 font-semibold"
         >
           <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-all duration-200">
-            <LogOut className="h-5 w-5 rotate-180" />
+            <LogOut className="h-5 w-5" />
           </div>
           <span className="font-medium">Logout</span>
         </button>

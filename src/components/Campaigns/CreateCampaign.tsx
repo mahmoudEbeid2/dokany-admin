@@ -102,10 +102,15 @@ const CreateCampaign: React.FC = () => {
   };
 
   const handleInputChange = (field: keyof CreateCampaignData, value: any) => {
-    setFormData(prev => ({
+    console.log('handleInputChange called with field:', field, 'value:', value);
+    setFormData(prev => {
+      const newData = {
       ...prev,
       [field]: value
-    }));
+      };
+      console.log('New form data:', newData);
+      return newData;
+    });
 
     // Clear validation error when user starts typing
     if (validationErrors[field]) {
@@ -120,8 +125,8 @@ const CreateCampaign: React.FC = () => {
       setFormData(prev => ({
         ...prev,
         [field]: value,
-        targetThemeIds: [] as string[],
-        targetLocations: []
+        targetThemeIds: value === 'theme' ? prev.targetThemeIds : [],
+        targetLocations: value === 'location' ? prev.targetLocations : []
       }));
       
       // Clear related validation errors
@@ -161,15 +166,15 @@ const CreateCampaign: React.FC = () => {
           console.log('Processing location:', locName, 'Type:', location?.type);
           
           if (location?.type === 'country') {
-            return { country: locName, governorate: null, city: null };
+            return { country: locName };
           }
           if (location?.type === 'governorate') {
-            return { country: null, governorate: locName, city: null };
+            return { governorate: locName };
           }
           if (location?.type === 'city') {
-            return { country: null, governorate: null, city: locName };
+            return { city: locName };
           }
-          return { country: locName, governorate: null, city: null }; // fallback
+          return { country: locName }; // fallback
         });
         
         campaignData.target_locations = locationData;
@@ -184,19 +189,21 @@ const CreateCampaign: React.FC = () => {
       console.log('Locations:', locations);
       console.log('Themes:', themes);
       console.log('Final API Data:', JSON.stringify(campaignData, null, 2));
+      console.log('API Endpoint: /admin/campaigns');
+      console.log('Request Method: POST');
       
       // Validate data before sending
       if (!campaignData.title || !campaignData.content) {
         throw new Error('Title and content are required');
       }
-      
+
       if (formData.targetType === 'theme' && (!campaignData.target_theme_id)) {
         throw new Error('Theme ID is required for theme targeting');
       }
-      
+
       if (formData.targetType === 'location' && (!campaignData.target_locations || campaignData.target_locations.length === 0)) {
         throw new Error('Locations are required for location targeting');
-      }
+                }
       
       console.log('=== END DEBUG ===');
 
@@ -233,11 +240,17 @@ const CreateCampaign: React.FC = () => {
 
   const handleLocationToggle = (locationName: string) => {
     const currentLocations = formData.targetLocations || [];
+    console.log('handleLocationToggle called with:', locationName);
+    console.log('Current locations before:', currentLocations);
     
     if (currentLocations.includes(locationName)) {
-      handleInputChange('targetLocations', currentLocations.filter(loc => loc !== locationName));
+      const newLocations = currentLocations.filter(loc => loc !== locationName);
+      console.log('Removing location, new locations:', newLocations);
+      handleInputChange('targetLocations', newLocations);
     } else {
-      handleInputChange('targetLocations', [...currentLocations, locationName]);
+      const newLocations = [...currentLocations, locationName];
+      console.log('Adding location, new locations:', newLocations);
+      handleInputChange('targetLocations', newLocations);
     }
   };
 
@@ -292,12 +305,12 @@ const CreateCampaign: React.FC = () => {
             <div className="ml-3 flex-1">
               <p className="text-sm text-red-800 font-medium">{error}</p>
             </div>
-            <button
+              <button
               onClick={clearMessages}
               className="text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100"
-            >
-              ✕
-            </button>
+              >
+                ✕
+              </button>
           </div>
         </div>
       )}
@@ -316,21 +329,21 @@ const CreateCampaign: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6 xl:gap-8">
           {/* Main Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-4 lg:space-y-6">
             {/* Campaign Details */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl">
-                  <Mail className="w-7 h-7 text-white" />
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 lg:mb-6 flex items-center gap-2 lg:gap-3">
+                <div className="p-2 sm:p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl">
+                  <Mail className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                 </div>
                 Campaign Details
               </h3>
               
-              <div className="space-y-6">
+              <div className="space-y-4 lg:space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 lg:mb-3">
                     Campaign Title *
                   </label>
                   <input
@@ -383,21 +396,21 @@ const CreateCampaign: React.FC = () => {
             </div>
 
             {/* Targeting Options */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
-                  <Target className="w-7 h-7 text-white" />
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 lg:mb-6 flex items-center gap-2 lg:gap-3">
+                <div className="p-2 sm:p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
+                  <Target className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                 </div>
                 Targeting Options
               </h3>
               
-              <div className="space-y-6">
+              <div className="space-y-4 lg:space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-4">
                     Targeting Type
                   </label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+                    <label className={`flex items-center p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 ${
                       formData.targetType === 'all' 
                         ? 'border-blue-500 bg-blue-50 shadow-lg' 
                         : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50/50'
@@ -414,12 +427,12 @@ const CreateCampaign: React.FC = () => {
                         <Users className="w-5 h-5 text-blue-600" />
                         <div>
                           <div className="font-semibold text-gray-900">All Sellers</div>
-                          <div className="text-sm text-gray-600">Target all sellers</div>
+                          <div className="text-xs text-gray-600">All users</div>
                         </div>
                       </div>
                     </label>
 
-                    <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 ${
+                    <label className={`flex items-center p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 ${
                       formData.targetType === 'theme' 
                         ? 'border-purple-500 bg-purple-50 shadow-lg' 
                         : 'border-gray-300 hover:border-purple-300 hover:bg-purple-50/50'
@@ -435,13 +448,13 @@ const CreateCampaign: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <Palette className="w-5 h-5 text-purple-600" />
                         <div>
-                          <div className="font-semibold text-gray-900">Specific Theme</div>
-                          <div className="text-sm text-gray-600">Target by theme</div>
+                          <div className="font-semibold text-gray-900">Theme</div>
+                          <div className="text-xs text-gray-600">By theme</div>
                         </div>
                       </div>
                     </label>
 
-                    <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 ${
+                    <label className={`flex items-center p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 ${
                       formData.targetType === 'location' 
                         ? 'border-green-500 bg-green-50 shadow-lg' 
                         : 'border-gray-300 hover:border-green-300 hover:bg-green-50/50'
@@ -457,22 +470,22 @@ const CreateCampaign: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <MapPin className="w-5 h-5 text-green-600" />
                         <div>
-                          <div className="font-semibold text-gray-900">Specific Location</div>
-                          <div className="text-sm text-gray-600">Target by location</div>
+                          <div className="font-semibold text-gray-900">Location</div>
+                          <div className="text-xs text-gray-600">By location</div>
                         </div>
                       </div>
                     </label>
                   </div>
                 </div>
 
-                                {/* Theme Selection */}
+                {/* Theme Selection */}
                 {formData.targetType === 'theme' && (
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Select Themes *
+                      Select Theme *
                     </label>
                     
-                    <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3 bg-white">
+                    <div className="max-h-48 overflow-y-auto sidebar-scrollbar border border-gray-300 rounded-lg p-3 bg-white">
                       {themes && themes.length > 0 ? (
                         themes.map(theme => (
                           <label key={theme.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
@@ -490,7 +503,7 @@ const CreateCampaign: React.FC = () => {
                               className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                             />
                             <span className="text-sm text-gray-700">{theme.name}</span>
-                          </label>
+                    </label>
                         ))
                       ) : (
                         <div className="text-gray-500 text-center py-4">No themes available</div>
@@ -511,7 +524,7 @@ const CreateCampaign: React.FC = () => {
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-3">
-                        Select Locations *
+                        Select Location *
                       </label>
                       {validationErrors.targetLocations && (
                         <p className="mb-3 text-sm text-red-600 flex items-center gap-2">
@@ -526,7 +539,7 @@ const CreateCampaign: React.FC = () => {
                           <label className="block text-sm font-semibold text-gray-700 mb-2">
                             🌍 Countries
                           </label>
-                          <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3 bg-white">
+                          <div className="max-h-48 overflow-y-auto sidebar-scrollbar border border-gray-300 rounded-lg p-3 bg-white">
                             {locations.filter(loc => loc.type === 'country').map(country => (
                               <label key={country.name} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                                 <input
@@ -542,15 +555,15 @@ const CreateCampaign: React.FC = () => {
                         </div>
 
                         {/* Governorates Dropdown */}
-                        <div>
+                    <div>
                           <label className="block text-sm font-semibold text-gray-700 mb-2">
                             🏛️ Governorates
-                          </label>
-                          <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3 bg-white">
+                      </label>
+                          <div className="max-h-48 overflow-y-auto sidebar-scrollbar border border-gray-300 rounded-lg p-3 bg-white">
                             {locations.filter(loc => loc.type === 'governorate').map(governorate => (
                               <label key={governorate.name} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                <input
-                                  type="checkbox"
+                                                          <input
+                                type="checkbox"
                                   checked={(formData.targetLocations || []).includes(governorate.name)}
                                   onChange={() => handleLocationToggle(governorate.name)}
                                   className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
@@ -559,14 +572,14 @@ const CreateCampaign: React.FC = () => {
                               </label>
                             ))}
                           </div>
-                        </div>
+                            </div>
 
                         {/* Cities Dropdown */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 mb-2">
                             🏙️ Cities
                           </label>
-                          <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3 bg-white">
+                          <div className="max-h-48 overflow-y-auto sidebar-scrollbar border border-gray-300 rounded-lg p-3 bg-white">
                             {locations.filter(loc => loc.type === 'city').map(city => (
                               <label key={city.name} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                                 <input
@@ -576,9 +589,9 @@ const CreateCampaign: React.FC = () => {
                                   className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                                 />
                                 <span className="text-sm text-gray-700">{city.name}</span>
-                              </label>
-                            ))}
-                          </div>
+                          </label>
+                        ))}
+                      </div>
                         </div>
                       </div>
 
@@ -618,10 +631,10 @@ const CreateCampaign: React.FC = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             {/* Campaign Preview */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 lg:mb-6 flex items-center gap-2 lg:gap-3">
                 <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg">
                   <Eye className="w-5 h-5 text-white" />
                 </div>
@@ -672,8 +685,8 @@ const CreateCampaign: React.FC = () => {
             </div>
 
             {/* Actions */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">Actions</h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 lg:mb-6">Actions</h3>
               
               <div className="space-y-4">
                 <button

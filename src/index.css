@@ -19,3 +19,65 @@ html, body {
 body.modal-open {
   overflow: hidden;
 }
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  border-radius: 8px;
+  border: 2px solid #f8fafc;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1, #d53f8c);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 8px;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #f8fafc;
+}
+
+/* Custom scrollbar for specific components */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #faf5ff, #f3e8ff);
+  border-radius: 6px;
+  border: 1px solid #f3e8ff;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #a855f7, #ec4899, #f97316);
+  border-radius: 6px;
+  border: 2px solid #faf5ff;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(168, 85, 247, 0.4);
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #9333ea, #db2777, #ea580c);
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(168, 85, 247, 0.6);
+}

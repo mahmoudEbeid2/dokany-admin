@@ -52,7 +52,7 @@ const Layout: React.FC = () => {
         </button>
       )}
       
-      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+              <main className="flex-1 overflow-y-auto overflow-x-hidden sidebar-scrollbar">
         <div className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </div>

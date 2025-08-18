@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://dokany-api-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API ;
 
 // Create axios instance with default config
 const api = axios.create({

@@ -14,7 +14,17 @@ const Analytics: React.FC = () => {
     adminsCount: number;
     customersCount: number;
     productsCount: number;
-    totalEarnings: number;
+    totalRevenue: string;
+    adminProfitFromOrders: string;
+    totalCampaignProfits: string;
+    totalAdminProfit: string;
+    netRevenueForSellers: string;
+    breakdown: {
+      revenue: string;
+      adminCut: string;
+      totalCampaignProfits: string;
+      totalProfit: string;
+    };
   }>(null);
   const [payoutsData, setPayoutsData] = useState<null | {
     paidCount: number;
@@ -71,9 +81,11 @@ const Analytics: React.FC = () => {
         const campaignsStats = await campaignService.getCampaignStats();
         if (campaignsStats && typeof campaignsStats === 'object') {
           if ('data' in campaignsStats && campaignsStats.data) {
-            setCampaignsCount(campaignsStats.data.total_campaigns);
+            setCampaignsCount((campaignsStats.data as any).total_campaigns);
+          } else if ('total_campaigns' in campaignsStats) {
+            setCampaignsCount((campaignsStats as any).total_campaigns);
           } else {
-            setCampaignsCount(campaignsStats.total_campaigns);
+            setCampaignsCount(0);
           }
         }
       } catch (campaignError) {
@@ -120,12 +132,46 @@ const Analytics: React.FC = () => {
         description: 'Registered customers'
       },
       {
-        title: 'Platform Revenue (10%)',
-        value: `$${Math.round(statsData.totalEarnings * 0.1).toLocaleString()}`,
+        title: 'Total Revenue',
+        value: `$${parseFloat(statsData.totalRevenue).toLocaleString()}`,
         icon: DollarSign,
+        color: 'bg-green-500',
+        change: '+23%',
+        description: 'From delivered orders'
+      },
+      {
+        title: 'Net Revenue',
+        value: `$${parseFloat(statsData.netRevenueForSellers).toLocaleString()}`,
+        icon: DollarSign,
+        color: 'bg-blue-600',
+        change: '+20%',
+        description: 'After admin cut'
+      },
+      {
+        title: 'Order Profit (10%)',
+        value: `$${parseFloat(statsData.adminProfitFromOrders).toLocaleString()}`,
+        icon: TrendingUp,
         color: 'bg-orange-500',
         change: '+23%',
-        description: 'Platform commission (10%)'
+        description: 'Platform commission'
+      },
+      {
+        title: 'Campaign Profits',
+        value: `$${parseFloat(statsData.totalCampaignProfits).toLocaleString()}`,
+        icon: Target,
+        color: 'bg-indigo-500',
+        change: '+18%',
+        description: 'From paid campaigns'
+      },
+ 
+   
+      {
+        title: 'Total Profit',
+        value: `$${parseFloat(statsData.totalAdminProfit).toLocaleString()}`,
+        icon: BarChart3,
+        color: 'bg-emerald-600',
+        change: '+25%',
+        description: 'Total earnings'
       },
       {
         title: 'Total Themes',
@@ -135,14 +181,8 @@ const Analytics: React.FC = () => {
         change: '+5%',
         description: 'Available themes'
       },
-      {
-        title: 'Total Campaigns',
-        value: campaignsCount !== null ? campaignsCount.toString() : '--',
-        icon: Mail,
-        color: 'bg-indigo-500',
-        change: '+18%',
-        description: 'Active campaigns'
-      },
+     
+      
     ];
   }, [statsData, themesCount, campaignsCount]);
 
@@ -238,7 +278,9 @@ const Analytics: React.FC = () => {
           })}
         </div>
 
-                 {/* Responsive Bottom Section */}
+
+
+        {/* Responsive Bottom Section */}
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
            {/* Quick Stats */}
            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
